@@ -11,8 +11,8 @@ app.use(express.json())
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.MAIL_USER || 'grahmindinnovations@gmail.com',
-    pass: process.env.MAIL_PASS || 'toue izrq gmwu nwhq',
+    user: process.env.MAIL_USER ,
+    pass: process.env.MAIL_PASS ,
   },
 })
 
@@ -80,7 +80,7 @@ ${message || '-'}
 `.trim()
 
   const mailOptions = {
-    from: `"Ganesha Contact" <${process.env.MAIL_USER || 'grahmindinnovations@gmail.com'}>`,
+    from: `"Ganesha Contact" <${process.env.MAIL_USER }>`,
     to: 'innovimagine@gmail.com',
     subject: 'New contact from Ganesha landing page',
     text: plainText,
