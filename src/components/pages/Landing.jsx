@@ -15,8 +15,11 @@ function Landing() {
     const formData = new FormData(form)
     const payload = Object.fromEntries(formData.entries())
   
+    // In dev: local Express server. In production (Vercel): same-origin serverless /api/send-email
+    const isDev = import.meta.env.DEV
+    const url = isDev ? 'http://localhost:5000/send-email' : '/api/send-email'
     try {
-      const res = await fetch('http://localhost:5000/send-email', {
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
