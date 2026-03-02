@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer')
+import nodemailer from 'nodemailer'
 
 function escapeHtml(str) {
   if (str == null) return ''
@@ -15,7 +15,7 @@ function sendJson(res, status, data) {
   res.status(status).json(data)
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
       auth: { user, pass },
     })
 
-  const plainText = `
+    const plainText = `
 New contact details:
 
 Name: ${name}
@@ -64,7 +64,7 @@ Message:
 ${message || '-'}
 `.trim()
 
-  const html = `
+    const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -97,13 +97,13 @@ ${message || '-'}
 </html>
 `.trim()
 
-  const mailOptions = {
-    from: `"Ganesha Contact" <${user}>`,
-    to: 'innovimagine@gmail.com',
-    subject: 'New contact from Ganesha landing page',
-    text: plainText,
-    html,
-  }
+    const mailOptions = {
+      from: `"Ganesha Contact" <${user}>`,
+      to: 'innovimagine@gmail.com',
+      subject: 'New contact from Ganesha landing page',
+      text: plainText,
+      html,
+    }
 
     const info = await transporter.sendMail(mailOptions)
     console.log('[send-email] Sent successfully:', info.messageId)
