@@ -6,11 +6,13 @@ import { BrowserRouter as Router } from 'react-router-dom'
 function Layout() {
     return (
         <Router>
-            <Header />
-            <div>
-                <Routers />
+            <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-1">
+                    <Routers />
+                </main>
+                <Footer />
             </div>
-            <Footer />
         </Router>
     )
 }

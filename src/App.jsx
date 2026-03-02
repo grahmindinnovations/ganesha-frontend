@@ -1,8 +1,9 @@
 import React from 'react'
 import Layout from './components/layout/Layout'
+
 function App() {
   return (
-    <div>
+    <div className="min-h-screen bg-white text-slate-900">
       <Layout />
     </div>
   )

@@ -1,14 +1,15 @@
 import React from 'react'
-
-import Login from '../pages/Login'
 import { Routes, Route } from 'react-router-dom'
+
+import Landing from '../pages/Landing'
+import Login from '../pages/Login'
+
 function Routers() {
   return (
-    <div>
-        <Routes>
-            <Route path='/' element={<Login />} />
-        </Routes>
-    </div>
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+    </Routes>
   )
 }
 
