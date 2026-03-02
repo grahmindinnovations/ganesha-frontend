@@ -10,39 +10,46 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;')
 }
 
+function sendJson(res, status, data) {
+  res.setHeader('Content-Type', 'application/json')
+  res.status(status).json(data)
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
   if (req.method === 'OPTIONS') return res.status(200).end()
-
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' })
+    return sendJson(res, 405, { success: false, message: 'Method not allowed' })
   }
 
-  const { name, email, phone, city, businessName, message } = req.body || {}
+  try {
+    const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {})
+    const { name, email, phone, city, businessName, message } = body
 
-  if (!name || !email || !phone || !message) {
-    return res.status(400).json({
-      success: false,
-      message: 'Name, email, phone and message are required.',
+    if (!name || !email || !phone || !message) {
+      return sendJson(res, 400, {
+        success: false,
+        message: 'Name, email, phone and message are required.',
+      })
+    }
+
+    const user = process.env.MAIL_USER
+    const pass = process.env.MAIL_PASS
+    if (!user || !pass) {
+      console.error('[send-email] MAIL_USER or MAIL_PASS not set in environment')
+      return sendJson(res, 500, {
+        success: false,
+        message: 'Unable to send email. Please try again later or contact inquiry@ganesha.app.',
+      })
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user, pass },
     })
-  }
-
-  const user = process.env.MAIL_USER
-  const pass = process.env.MAIL_PASS
-  if (!user || !pass) {
-    console.error('[send-email] MAIL_USER or MAIL_PASS not set')
-    return res.status(500).json({
-      success: false,
-      message: 'Unable to send email. Please try again later or contact inquiry@ganesha.app.',
-    })
-  }
-
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user, pass },
-  })
 
   const plainText = `
 New contact details:
@@ -98,13 +105,13 @@ ${message || '-'}
     html,
   }
 
-  try {
     const info = await transporter.sendMail(mailOptions)
     console.log('[send-email] Sent successfully:', info.messageId)
-    return res.status(200).json({ success: true, message: 'Email sent successfully.' })
-  } catch (error) {
-    console.error('[send-email] Nodemailer error:', error.message)
-    return res.status(500).json({
+    return sendJson(res, 200, { success: true, message: 'Email sent successfully.' })
+  } catch (err) {
+    console.error('[send-email] Error:', err.message)
+    console.error('[send-email] Stack:', err.stack)
+    return sendJson(res, 500, {
       success: false,
       message: 'Unable to send email. Please try again later or contact inquiry@ganesha.app.',
     })
